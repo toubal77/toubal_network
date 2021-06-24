@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "45460682149",
+    "project_id": "toubal-network",
+    "storage_bucket": "toubal-network.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:45460682149:android:6a0782724d0f9880b5e44c",
+        "android_client_info": {
+          "package_name": "com.example.toubal_network"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "45460682149-1ats6r2uj5isc1pgnrdic6bhl0ktgoio.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb97WmUicCS-yX1sVSbTappIJzWdi1n2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "45460682149-1ats6r2uj5isc1pgnrdic6bhl0ktgoio.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
