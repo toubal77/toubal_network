@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:toubal_network/chat/pickers/user_image_picker.dart';
 import 'package:toubal_network/social/home_widget.dart';
 import 'package:toubal_network/chat/services/auth.dart';
 import 'package:toubal_network/chat/services/database.dart';
@@ -21,6 +20,7 @@ class _AuthScreenState extends State<AuthScreen> {
   TextEditingController passwordController = new TextEditingController();
   var _isLogin = true;
   var _isLoading = false;
+  // ignore: unused_field
   late File _userImageFile;
   // ignore: unused_element
   void _pickedImage(File image) {
