@@ -1,9 +1,37 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseMethods {
+  Future<void> createImageUser(
+      String email, String name, File imageFile) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('username', name);
+      prefs.setString('email', email);
+      String nameImage = email + '.jpg';
+      final ref =
+          FirebaseStorage.instance.ref().child('user_image').child(nameImage);
+      await ref.putFile(imageFile);
+      final url = await ref.getDownloadURL();
+      prefs.setString('imageUrl', url.toString());
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      prefs.setString('userId', userId);
+      var userData = {
+        "username": name,
+        "email": email,
+        "userId": userId,
+        'imageUrl': url.toString()
+      };
+      DatabaseMethods().addDocument("users", userData);
+    } catch (err) {
+      print("error in create image user:" + err.toString());
+    }
+  }
+
   Future<void> addDocument(String path, var data) async {
     await FirebaseFirestore.instance
         .collection(path)
@@ -12,7 +40,7 @@ class DatabaseMethods {
         .catchError((error) => print("Failed to add document: $error"));
   }
 
-  Future sendMessage(String chatRoomId, var data) async {
+  Future<void> sendMessage(String chatRoomId, var data) async {
     await FirebaseFirestore.instance
         .collection("ChatRoom")
         .add(data)
@@ -20,15 +48,20 @@ class DatabaseMethods {
         .catchError((error) => print("Failed to send message: $error"));
   }
 
-  Future addUserImage(String path, String nameImage, File imageFile) async {
-    final ref =
-        FirebaseStorage.instance.ref().child('user_image').child(nameImage);
-    await ref.putFile(imageFile);
-    final url = await ref.getDownloadURL();
-    return url;
+  Future<void> addUserImage(
+      String path, String nameImage, File imageFile) async {
+    try {
+      final ref =
+          FirebaseStorage.instance.ref().child('user_image').child(nameImage);
+      await ref.putFile(imageFile);
+      final url = await ref.getDownloadURL();
+      print("add user image :" + url.toString());
+    } catch (err) {
+      print('error in add user image ' + err.toString());
+    }
   }
 
-  Future getUserInfo(String email) async {
+  Future<void> getUserInfo(String email) async {
     return FirebaseFirestore.instance
         .collection("users")
         .where('email', isEqualTo: email)
@@ -37,7 +70,7 @@ class DatabaseMethods {
         .catchError((error) => print("Failed to get user info: $error"));
   }
 
-  Future searchByName(String searchName) async {
+  Future<void> searchByName(String searchName) async {
     return FirebaseFirestore.instance
         .collection("users")
         .where('username', isEqualTo: searchName)

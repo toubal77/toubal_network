@@ -34,13 +34,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   sendMessage(String friendId, String messageContent) async {
     User? _user = FirebaseAuth.instance.currentUser;
     String userId = _user!.uid;
-    var time = DateTime.now();
+    // var time = DateTime.now();
     String chatRoomId = (userId.hashCode + friendId.hashCode).toString();
     var _dataMessage = {
       'chatRoomId': chatRoomId,
       'idFrom': userId,
       'idIn': friendId,
-      'time': time,
+      // 'time': time,
       'messageContent': messageContent,
       'read': false,
     };

@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:toubal_network/chat/pickers/user_image_picker.dart';
 import 'package:toubal_network/social/home_widget.dart';
 import 'package:toubal_network/chat/services/auth.dart';
 import 'package:toubal_network/chat/services/database.dart';
@@ -27,20 +27,21 @@ class _AuthScreenState extends State<AuthScreen> {
     _userImageFile = image;
   }
 
+  late String url;
   Future<void> _formSubmit() async {
     FocusScope.of(context).unfocus();
     _formKey.currentState!.save();
 
-    // ignore: unnecessary_null_comparison
-    // if (_userImageFile == null && !_isLogin) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text('Please pick an image.'),
-    //       backgroundColor: Theme.of(context).errorColor,
-    //     ),
-    //   );
-    //   return;
-    // }
+    //ignore: unnecessary_null_comparison
+    if (_userImageFile == null && !_isLogin) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please pick an image.'),
+          backgroundColor: Theme.of(context).errorColor,
+        ),
+      );
+      return;
+    }
     if (!_formKey.currentState!.validate()) {
       return;
     } else {
@@ -67,24 +68,10 @@ class _AuthScreenState extends State<AuthScreen> {
               .then(
             (result) async {
               if (result != null) {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                prefs.setString('username', usernameController.text);
-                prefs.setString('email', emailController.text);
-
-                // String nameImage = emailController.text + '.jpg';
-                // final url = DatabaseMethods()
-                //     .addUserImage('user_image', nameImage, _userImageFile);
-                // prefs.setString('imageUrl', url.toString());
-                String userId = FirebaseAuth.instance.currentUser!.uid;
-                prefs.setString('userId', userId);
-                var userData = {
-                  "username": usernameController.text,
-                  "email": emailController.text,
-                  "userId": userId,
-                  // 'imageUrl': url.toString()
-                };
-
-                DatabaseMethods().addDocument("users", userData);
+                DatabaseMethods()
+                    .createImageUser(emailController.text,
+                        usernameController.text, _userImageFile)
+                    .then((value) => print('create image user approved'));
               }
               Navigator.pushReplacement(
                 context,
@@ -163,7 +150,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        //     if (!_isLogin) UserImagePicker(_pickedImage),
+                        if (!_isLogin) UserImagePicker(_pickedImage),
                         TextFormField(
                           key: ValueKey('email'),
                           controller: emailController,

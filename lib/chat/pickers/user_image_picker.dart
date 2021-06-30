@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UserImagePicker extends StatefulWidget {
   UserImagePicker(this.imagePickFn);
@@ -13,17 +14,17 @@ class UserImagePicker extends StatefulWidget {
 
 class _UserImagePickerState extends State<UserImagePicker> {
   late File _pickedImage;
-  // void _pickImage() async {
-  //   final pickedImageFile = await ImagePicker().getImage(
-  //     source: ImageSource.camera,
-  //     maxWidth: 300,
-  //     maxHeight: 300,
-  //   );
-  //   setState(() {
-  //     _pickedImage = File(pickedImageFile!.path);
-  //   });
-  //   widget.imagePickFn(_pickedImage);
-  // }
+  void _pickImage() async {
+    final pickedImageFile = await ImagePicker().getImage(
+      source: ImageSource.camera,
+      maxWidth: 300,
+      maxHeight: 300,
+    );
+    setState(() {
+      _pickedImage = File(pickedImageFile!.path);
+    });
+    widget.imagePickFn(_pickedImage);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +33,12 @@ class _UserImagePickerState extends State<UserImagePicker> {
         CircleAvatar(
           radius: 40,
           backgroundColor: Colors.grey,
-          backgroundImage:
-              // ignore: unnecessary_null_comparison
-              _pickedImage != null ? FileImage(_pickedImage) : null,
+          // backgroundImage:
+          //     // ignore: unnecessary_null_comparison
+          //     _pickedImage != null ? FileImage(_pickedImage) : null,
         ),
         TextButton.icon(
-          onPressed: () {},
+          onPressed: _pickImage,
           icon: Icon(Icons.image),
           label: Text('Add Image'),
         ),
