@@ -77,7 +77,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                   width: 2,
                 ),
                 CircleAvatar(
-                  backgroundImage: AssetImage(widget.imageUrl),
+                  backgroundImage: NetworkImage(widget.imageUrl),
                   maxRadius: 20,
                 ),
                 SizedBox(

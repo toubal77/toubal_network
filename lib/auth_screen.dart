@@ -27,13 +27,12 @@ class _AuthScreenState extends State<AuthScreen> {
     _userImageFile = image;
   }
 
-  late String url;
   Future<void> _formSubmit() async {
     FocusScope.of(context).unfocus();
     _formKey.currentState!.save();
 
     //ignore: unnecessary_null_comparison
-    if (_userImageFile == null && !_isLogin) {
+    if (!_isLogin) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please pick an image.'),
@@ -50,20 +49,10 @@ class _AuthScreenState extends State<AuthScreen> {
           _isLoading = true;
         });
         if (_isLogin == true) {
-          // ignore: unused_local_variable
-          var authResult = await AuthService()
+          await AuthService()
               .signInEmailPassword(emailController.text, emailController.text);
-          if (authResult != null) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => HomeWidget(),
-              ),
-            );
-          }
         } else {
-          // ignore: unused_local_variable
-          var authResult = await AuthService()
+          await AuthService()
               .signUpEmailPassword(emailController.text, emailController.text)
               .then(
             (result) async {
@@ -73,19 +62,26 @@ class _AuthScreenState extends State<AuthScreen> {
                         usernameController.text, _userImageFile)
                     .then((value) => print('create image user approved'));
               }
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeWidget(),
-                ),
-              );
             },
           );
         }
         setState(() {
           _isLoading = false;
         });
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeWidget(),
+          ),
+        );
       } catch (e) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: Text("Error"),
+            content: Text(e.toString()),
+          ),
+        );
         print(e.toString());
       }
     }
