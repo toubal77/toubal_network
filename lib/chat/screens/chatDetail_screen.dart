@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:toubal_network/chat/models/chatMessage.dart';
-import 'package:toubal_network/chat/services/database.dart';
 import 'package:toubal_network/chat/widgets/message.dart';
+import 'package:toubal_network/chat/widgets/new_message.dart';
 
 // ignore: must_be_immutable
 class ChatDetailScreen extends StatefulWidget {
@@ -20,34 +19,6 @@ class ChatDetailScreen extends StatefulWidget {
 }
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
-  TextEditingController messageContent = TextEditingController();
-  List<ChatMessage> messages = [
-    ChatMessage(messageContent: "Hello, Will", messageType: "receiver"),
-    ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
-    ChatMessage(
-        messageContent: "Hey Kriss, I am doing fine dude. wbu?",
-        messageType: "sender"),
-    ChatMessage(messageContent: "ehhhh, doing OK.", messageType: "receiver"),
-    ChatMessage(
-        messageContent: "Is there any thing wrong?", messageType: "sender"),
-  ];
-  sendMessage(String friendId, String messageContent) async {
-    User? _user = FirebaseAuth.instance.currentUser;
-    String userId = _user!.uid;
-    // var time = DateTime.now();
-    String chatRoomId = (userId.hashCode + friendId.hashCode).toString();
-    var _dataMessage = {
-      'chatRoomId': chatRoomId,
-      'idFrom': userId,
-      'idIn': friendId,
-      // 'time': time,
-      'messageContent': messageContent,
-      'read': false,
-    };
-
-    await DatabaseMethods().sendMessage(chatRoomId, _dataMessage);
-  }
-
   @override
   Widget build(BuildContext context) {
     User? _user = FirebaseAuth.instance.currentUser;
@@ -132,7 +103,13 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               }
 
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: Text("Loading"));
+                return Center(
+                    child: Row(
+                  children: [
+                    Text("Loading"),
+                    CircularProgressIndicator(),
+                  ],
+                ));
               }
               final data = snapshot.data!.docs;
               return data.length == 0
@@ -154,70 +131,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                     );
             },
           ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-              height: 60,
-              width: double.infinity,
-              color: Colors.white,
-              child: Row(
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: () {},
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.camera,
-                          color: Colors.blue,
-                          size: 20,
-                        ),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                        Icon(
-                          Icons.image,
-                          color: Colors.blue,
-                          size: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Expanded(
-                    child: TextField(
-                      autofocus: true,
-                      maxLines: 4,
-                      controller: messageContent,
-                      decoration: InputDecoration(
-                        hintText: "Write message...",
-                        hintStyle: TextStyle(color: Colors.black54),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  FloatingActionButton(
-                    onPressed: () {
-                      sendMessage(widget.id, messageContent.text.trim());
-                      messageContent.clear();
-                    },
-                    child: Icon(
-                      Icons.send,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                    backgroundColor: Colors.blue,
-                    elevation: 0,
-                  ),
-                ],
-              ),
-            ),
-          ),
+          NewMessage(idRoom: chatRoomId),
         ],
       ),
     );

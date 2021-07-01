@@ -9,26 +9,26 @@ class Message extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
       child: Align(
-        alignment: (messageDoc['idIn'] == userId
+        alignment: (messageDoc['idUser'] != userId
             ? Alignment.topLeft
             : Alignment.topRight),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
-              bottomLeft: messageDoc['idIn'] == userId
+              bottomLeft: messageDoc['idUser'] != userId
                   ? Radius.circular(0)
                   : Radius.circular(20),
-              topLeft: messageDoc['idIn'] == userId
+              topLeft: messageDoc['idUser'] != userId
                   ? Radius.circular(20)
                   : Radius.circular(20),
-              topRight: messageDoc['idIn'] == userId
+              topRight: messageDoc['idUser'] != userId
                   ? Radius.circular(20)
                   : Radius.circular(0),
-              bottomRight: messageDoc['idIn'] == userId
+              bottomRight: messageDoc['idUser'] != userId
                   ? Radius.circular(20)
                   : Radius.circular(20),
             ),
-            color: (messageDoc['idIn'] == userId
+            color: (messageDoc['idUser'] != userId
                 ? Colors.grey.shade200
                 : Colors.blue[200]),
           ),
