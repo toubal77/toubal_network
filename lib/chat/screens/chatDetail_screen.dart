@@ -104,12 +104,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
 
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
-                    child: Row(
-                  children: [
-                    Text("Loading"),
-                    CircularProgressIndicator(),
-                  ],
-                ));
+                  child: Text("Loading"),
+                );
               }
               final data = snapshot.data!.docs;
               return data.length == 0

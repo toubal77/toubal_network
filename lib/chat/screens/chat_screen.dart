@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:toubal_network/chat/widgets/conversationList.dart';
 import 'package:toubal_network/social/home_widget.dart';
+import 'package:toubal_network/chat/widgets/conversationList.dart';
+import 'package:toubal_network/chat/services/database.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -11,6 +13,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
+    User? userId = FirebaseAuth.instance.currentUser;
     return Scaffold(
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
@@ -37,9 +40,16 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                         );
                       },
-                      child: CircleAvatar(
-                        backgroundImage:
-                            AssetImage('assets/images/userImage6.jpg'),
+                      child: FutureBuilder(
+                        future: DatabaseMethods().getImageUser(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData)
+                            return CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(snapshot.data.toString()),
+                            );
+                          return Center(child: CircularProgressIndicator());
+                        },
                       ),
                     ),
                   ],
@@ -92,7 +102,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         itemBuilder: (context, index) {
                           return ConversationList(
                             id: data[index]['userId'],
-                            name: data[index]['username'],
+                            name: data[index]['userId'] == userId!.uid
+                                ? 'moi meme'
+                                : data[index]['username'],
                             messageText: "Thankyou, It's awesome",
                             imageUrl: data[index]['imageUrl'],
                             time: "28 Mar",

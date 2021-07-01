@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:toubal_network/auth_screen.dart';
 import 'package:toubal_network/chat/services/auth.dart';
+import 'package:toubal_network/chat/services/database.dart';
 
 class ProfileScreen extends StatelessWidget {
   @override
@@ -27,9 +28,16 @@ class ProfileScreen extends StatelessWidget {
                     clipBehavior: Clip.none,
                     fit: StackFit.expand,
                     children: [
-                      CircleAvatar(
-                        backgroundImage:
-                            AssetImage('assets/images/userImage2.jpg'),
+                      FutureBuilder(
+                        future: DatabaseMethods().getImageUser(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData)
+                            return CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(snapshot.data.toString()),
+                            );
+                          return Center(child: CircularProgressIndicator());
+                        },
                       ),
                       Positioned(
                         right: -12,

@@ -3,23 +3,35 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseMethods {
+  Future getImageUser() async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    var snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .where('userId', isEqualTo: userId)
+        .get();
+    return snapshot.docs[0]['imageUrl'];
+  }
+
+  Future getNameUser() async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    var snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .where('userId', isEqualTo: userId)
+        .get();
+    return snapshot.docs[0]['username'];
+  }
+
   Future<void> createImageUser(
       String email, String name, File imageFile) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('username', name);
-      prefs.setString('email', email);
       String nameImage = email + '.jpg';
       final ref =
           FirebaseStorage.instance.ref().child('user_image').child(nameImage);
       await ref.putFile(imageFile);
       final url = await ref.getDownloadURL();
-      prefs.setString('imageUrl', url.toString());
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      prefs.setString('userId', userId);
       var userData = {
         "username": name,
         "email": email,
