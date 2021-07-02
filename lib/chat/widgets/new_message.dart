@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:toubal_network/chat/services/auth.dart';
 import 'package:toubal_network/chat/services/database.dart';
 
 // ignore: must_be_immutable
@@ -15,21 +17,60 @@ class NewMessage extends StatefulWidget {
 
 class _NewMessageState extends State<NewMessage> {
   TextEditingController messageContent = TextEditingController();
+  late File _pickedImage;
+  var _sourceImage;
   var _enteredMessage = '';
-  _sendMessage() async {
-    User? _user = FirebaseAuth.instance.currentUser;
-    String userId = _user!.uid;
-    var _dataMessage = {
-      'chatRoomId': widget.idRoom,
-      'idUser': userId,
-      'createdAt': Timestamp.now(),
-      'messageContent': _enteredMessage,
-      'read': false,
-    };
+  _sendMessage(bool sendImage) async {
+    if (sendImage) {
+      showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+          title: Text('Image Source'),
+          content: Text(' What is source of your image ?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _sourceImage = ImageSource.camera;
+                });
+              },
+              child: Text('camera'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _sourceImage = ImageSource.gallery;
+                });
+              },
+              child: Text('gallery'),
+            ),
+          ],
+        ),
+      );
+      final pickedImageFile = await ImagePicker().getImage(
+        source: _sourceImage,
+        maxWidth: 300,
+        maxHeight: 300,
+      );
+      setState(() {
+        _pickedImage = File(pickedImageFile!.path);
+      });
+      DatabaseMethods().sendMessageImage(widget.idRoom, _pickedImage);
+    } else {
+      String userId = AuthService().getIdUser();
+      var _dataMessage = {
+        'chatRoomId': widget.idRoom,
+        'idUser': userId,
+        'createdAt': Timestamp.now(),
+        'messageContent': _enteredMessage,
+        'imageMsg': false,
+        'read': false,
+      };
 
-    await DatabaseMethods().sendMessage(widget.idRoom, _dataMessage);
-    _enteredMessage = '';
-    messageContent.clear();
+      await DatabaseMethods().sendMessage(widget.idRoom, _dataMessage);
+      _enteredMessage = '';
+      messageContent.clear();
+    }
   }
 
   @override
@@ -55,10 +96,17 @@ class _NewMessageState extends State<NewMessage> {
                   SizedBox(
                     width: 10.0,
                   ),
-                  Icon(
-                    Icons.image,
-                    color: Colors.blue,
-                    size: 20,
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _sendMessage(true);
+                      });
+                    },
+                    child: Icon(
+                      Icons.image,
+                      color: Colors.blue,
+                      size: 20,
+                    ),
                   ),
                 ],
               ),
@@ -88,7 +136,7 @@ class _NewMessageState extends State<NewMessage> {
               onPressed: () {
                 setState(() {
                   // ignore: unnecessary_statements
-                  _enteredMessage.trim().isEmpty ? null : _sendMessage();
+                  _enteredMessage.trim().isEmpty ? null : _sendMessage(false);
                 });
               },
               child: Icon(

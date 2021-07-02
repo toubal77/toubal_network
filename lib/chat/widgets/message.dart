@@ -7,7 +7,9 @@ class Message extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+      padding: messageDoc['imageMsg'] == true
+          ? EdgeInsets.only(left: 14, right: 14)
+          : EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
       child: Align(
         alignment: (messageDoc['idUser'] != userId
             ? Alignment.topLeft
@@ -33,10 +35,14 @@ class Message extends StatelessWidget {
                 : Colors.blue[200]),
           ),
           padding: EdgeInsets.all(16),
-          child: Text(
-            messageDoc['messageContent'],
-            style: TextStyle(fontSize: 15),
-          ),
+          child: messageDoc['imageMsg'] == true
+              ? CircleAvatar(
+                  backgroundImage: NetworkImage(messageDoc['messageContent']),
+                )
+              : Text(
+                  messageDoc['messageContent'],
+                  style: TextStyle(fontSize: 15),
+                ),
         ),
       ),
     );

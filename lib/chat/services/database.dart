@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:toubal_network/chat/services/auth.dart';
 
 class DatabaseMethods {
   Future getImageUser() async {
@@ -31,7 +32,7 @@ class DatabaseMethods {
           FirebaseStorage.instance.ref().child('user_image').child(nameImage);
       await ref.putFile(imageFile);
       final url = await ref.getDownloadURL();
-      String userId = FirebaseAuth.instance.currentUser!.uid;
+      String userId = AuthService().getIdUser();
       var userData = {
         "username": name,
         "email": email,
@@ -58,6 +59,24 @@ class DatabaseMethods {
         .add(data)
         .then((value) => print("send message"))
         .catchError((error) => print("Failed to send message: $error"));
+  }
+
+  Future<void> sendMessageImage(String idRoom, File pickedImage) async {
+    String nameImage = idRoom + '.jpg';
+    final ref =
+        FirebaseStorage.instance.ref().child('Msg_image').child(nameImage);
+    await ref.putFile(pickedImage);
+    final url = await ref.getDownloadURL();
+    String userId = AuthService().getIdUser();
+    var _dataMessage = {
+      'chatRoomId': idRoom,
+      'idUser': userId,
+      'createdAt': Timestamp.now(),
+      'messageContent': url,
+      'imageMsg': true,
+      'read': false,
+    };
+    await DatabaseMethods().sendMessage(idRoom, _dataMessage);
   }
 
   Future<void> addUserImage(

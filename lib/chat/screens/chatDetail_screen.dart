@@ -87,46 +87,51 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: <Widget>[
-          StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('ChatRoom')
-                .where('chatRoomId', isEqualTo: chatRoomId)
-                .snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Center(child: Text('Something went wrong'));
-              }
+      body: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Expanded(
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('ChatRoom')
+                    .where('chatRoomId', isEqualTo: chatRoomId)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Something went wrong'));
+                  }
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: Text("Loading"),
-                );
-              }
-              final data = snapshot.data!.docs;
-              return data.length == 0
-                  ? Center(
-                      child: Text(
-                          'you never talk with your friend ley send him a message !!'),
-                    )
-                  : ListView.builder(
-                      itemCount: data.length,
-                      shrinkWrap: true,
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Message(
-                          messageDoc: data[index].data(),
-                          userId: userId,
-                        );
-                      },
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Text("Loading"),
                     );
-            },
-          ),
-          NewMessage(idRoom: chatRoomId),
-        ],
+                  }
+                  final data = snapshot.data!.docs;
+                  return data.length == 0
+                      ? Center(
+                          child: Text(
+                              'you never talk with your friend ley send him a message !!'),
+                        )
+                      : ListView.builder(
+                          itemCount: data.length,
+                          shrinkWrap: true,
+                          padding: EdgeInsets.only(top: 10, bottom: 10),
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return Message(
+                              messageDoc: data[index].data(),
+                              userId: userId,
+                            );
+                          },
+                        );
+                },
+              ),
+            ),
+            NewMessage(idRoom: chatRoomId),
+          ],
+        ),
       ),
     );
   }

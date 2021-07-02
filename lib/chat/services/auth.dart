@@ -46,6 +46,11 @@ class AuthService {
     }
   }
 
+  String getIdUser() {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    return userId;
+  }
+
   Future resetPass(String email) async {
     try {
       return await _auth.sendPasswordResetEmail(email: email);
