@@ -21,9 +21,7 @@ class ChatDetailScreen extends StatefulWidget {
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    User? _user = FirebaseAuth.instance.currentUser;
-    String userId = _user!.uid;
-    // ignore: unused_local_variable
+    String userId = FirebaseAuth.instance.currentUser!.uid;
     String chatRoomId = (userId.hashCode + widget.id.hashCode).toString();
     return Scaffold(
       appBar: AppBar(

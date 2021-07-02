@@ -28,6 +28,8 @@ class _NewMessageState extends State<NewMessage> {
     };
 
     await DatabaseMethods().sendMessage(widget.idRoom, _dataMessage);
+    _enteredMessage = '';
+    messageContent.clear();
   }
 
   @override
@@ -87,7 +89,6 @@ class _NewMessageState extends State<NewMessage> {
                 setState(() {
                   // ignore: unnecessary_statements
                   _enteredMessage.trim().isEmpty ? null : _sendMessage();
-                  _enteredMessage = '';
                 });
               },
               child: Icon(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:toubal_network/chat/home_widget.dart';
 import 'package:toubal_network/social/screens/profile_screen.dart';
+import 'package:toubal_network/social/services/database.dart';
 import 'package:toubal_network/social/widgets/buildPost.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -25,9 +26,16 @@ class HomeScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: CircleAvatar(
-                      backgroundImage:
-                          AssetImage('assets/images/userImage6.jpg'),
+                    child: FutureBuilder(
+                      future: DatabaseMethods().getImageUser(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData)
+                          return CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(snapshot.data.toString()),
+                          );
+                        return Center(child: CircularProgressIndicator());
+                      },
                     ),
                   ),
                   Text(
