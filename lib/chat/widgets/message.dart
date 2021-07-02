@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:toubal_network/chat/services/database.dart';
 
 class Message extends StatelessWidget {
   final messageDoc;
   final userId;
-  Message({this.messageDoc, this.userId});
+  final idDoc;
+  Message({this.messageDoc, this.userId, this.idDoc});
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: messageDoc['imageMsg'] == true
-          ? EdgeInsets.only(left: 14, right: 14)
-          : EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+      padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
       child: Align(
         alignment: (messageDoc['idUser'] != userId
             ? Alignment.topLeft
@@ -36,12 +36,24 @@ class Message extends StatelessWidget {
           ),
           padding: EdgeInsets.all(16),
           child: messageDoc['imageMsg'] == true
-              ? CircleAvatar(
-                  backgroundImage: NetworkImage(messageDoc['messageContent']),
+              ? GestureDetector(
+                  onDoubleTap: () {
+                    if (messageDoc['idUser'] == userId)
+                      DatabaseMethods().deleteMessage(idDoc);
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(messageDoc['messageContent']),
+                  ),
                 )
-              : Text(
-                  messageDoc['messageContent'],
-                  style: TextStyle(fontSize: 15),
+              : GestureDetector(
+                  onDoubleTap: () {
+                    if (messageDoc['idUser'] == userId)
+                      DatabaseMethods().deleteMessage(idDoc);
+                  },
+                  child: Text(
+                    messageDoc['messageContent'],
+                    style: TextStyle(fontSize: 15),
+                  ),
                 ),
         ),
       ),

@@ -95,6 +95,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
               child: StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('ChatRoom')
+                    .orderBy('createdAt', descending: false)
                     .where('chatRoomId', isEqualTo: chatRoomId)
                     .snapshots(),
                 builder: (BuildContext context,
@@ -123,6 +124,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
                             return Message(
                               messageDoc: data[index].data(),
                               userId: userId,
+                              idDoc: data[index].id,
                             );
                           },
                         );

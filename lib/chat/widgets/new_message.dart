@@ -18,37 +18,11 @@ class NewMessage extends StatefulWidget {
 class _NewMessageState extends State<NewMessage> {
   TextEditingController messageContent = TextEditingController();
   late File _pickedImage;
-  var _sourceImage;
   var _enteredMessage = '';
-  _sendMessage(bool sendImage) async {
+  _sendMessage(bool sendImage, var sourceImage) async {
     if (sendImage) {
-      showDialog(
-        context: context,
-        builder: (_) => new AlertDialog(
-          title: Text('Image Source'),
-          content: Text(' What is source of your image ?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _sourceImage = ImageSource.camera;
-                });
-              },
-              child: Text('camera'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _sourceImage = ImageSource.gallery;
-                });
-              },
-              child: Text('gallery'),
-            ),
-          ],
-        ),
-      );
       final pickedImageFile = await ImagePicker().getImage(
-        source: _sourceImage,
+        source: sourceImage,
         maxWidth: 300,
         maxHeight: 300,
       );
@@ -85,7 +59,11 @@ class _NewMessageState extends State<NewMessage> {
         child: Row(
           children: <Widget>[
             GestureDetector(
-              onTap: () {},
+              onTap: () {
+                setState(() {
+                  _sendMessage(true, ImageSource.camera);
+                });
+              },
               child: Row(
                 children: <Widget>[
                   Icon(
@@ -99,7 +77,7 @@ class _NewMessageState extends State<NewMessage> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        _sendMessage(true);
+                        _sendMessage(true, ImageSource.gallery);
                       });
                     },
                     child: Icon(
@@ -136,7 +114,10 @@ class _NewMessageState extends State<NewMessage> {
               onPressed: () {
                 setState(() {
                   // ignore: unnecessary_statements
-                  _enteredMessage.trim().isEmpty ? null : _sendMessage(false);
+                  _enteredMessage.trim().isEmpty
+                      // ignore: unnecessary_statements
+                      ? null
+                      : _sendMessage(false, null);
                 });
               },
               child: Icon(

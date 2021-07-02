@@ -40,6 +40,7 @@ class DatabaseMethods {
         'imageUrl': url.toString()
       };
       DatabaseMethods().addDocument("users", userData);
+      print('image user created with seccus!');
     } catch (err) {
       print("error in create image user:" + err.toString());
     }
@@ -57,26 +58,42 @@ class DatabaseMethods {
     await FirebaseFirestore.instance
         .collection("ChatRoom")
         .add(data)
-        .then((value) => print("send message"))
+        .then((value) => print("send message with seccus"))
         .catchError((error) => print("Failed to send message: $error"));
   }
 
   Future<void> sendMessageImage(String idRoom, File pickedImage) async {
-    String nameImage = idRoom + '.jpg';
-    final ref =
-        FirebaseStorage.instance.ref().child('Msg_image').child(nameImage);
-    await ref.putFile(pickedImage);
-    final url = await ref.getDownloadURL();
-    String userId = AuthService().getIdUser();
-    var _dataMessage = {
-      'chatRoomId': idRoom,
-      'idUser': userId,
-      'createdAt': Timestamp.now(),
-      'messageContent': url,
-      'imageMsg': true,
-      'read': false,
-    };
-    await DatabaseMethods().sendMessage(idRoom, _dataMessage);
+    try {
+      String nameImage = Timestamp.now().toString() + '.jpg';
+      final ref =
+          FirebaseStorage.instance.ref().child('Msg_image').child(nameImage);
+      await ref.putFile(pickedImage);
+      final url = await ref.getDownloadURL();
+      String userId = AuthService().getIdUser();
+      var _dataMessage = {
+        'chatRoomId': idRoom,
+        'idUser': userId,
+        'createdAt': Timestamp.now(),
+        'messageContent': url,
+        'imageMsg': true,
+        'read': false,
+      };
+      await DatabaseMethods().sendMessage(idRoom, _dataMessage);
+    } catch (err) {
+      print(err.toString());
+    }
+  }
+
+  Future<void> deleteMessage(String idDoc) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('ChatRoom')
+          .doc(idDoc)
+          .delete();
+      print('message deleted with seccus!');
+    } catch (err) {
+      print(err.toString());
+    }
   }
 
   Future<void> addUserImage(
